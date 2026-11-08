@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="auto">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>人格中枢</title>
+<!-- 图标：SVG 优先（矢量、任意缩放清晰），ICO 兜底（任务栏与旧环境用）。
+     Edge 的 --app 窗口，任务栏图标就取自这里——不设的话会显示 Edge 默认的球。 -->
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="icon" type="image/x-icon" href="favicon.ico">
+<link rel="apple-touch-icon" href="icon-256.png">
+<meta name="theme-color" content="#4B7BF5">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2.6 4.5 6.4v5.2c0 4.6 3.1 8.7 7.5 9.8 4.4-1.1 7.5-5.2 7.5-9.8V6.4Z"/>
+          <circle cx="12" cy="10.6" r="2.1"/>
+          <path d="M8.4 16.2c.9-1.5 2.1-2.2 3.6-2.2s2.7.7 3.6 2.2"/>
+        </svg>
+      </div>
+      <div class="brand-text">
+        <h1>人格中枢</h1>
+        <p>一处编辑 · 多端注入 · 随时完整还原</p>
+      </div>
+    </div>
+
+    <nav class="tabs" role="tablist">
+      <button class="tab active" data-panel="apply" role="tab">
+        人格与注入
+      </button>
+      <button class="tab" data-panel="injections" role="tab">
+        注入管理
+        <span class="tab-badge" id="tab-inj-badge" hidden>0</span>
+      </button>
+      <button class="tab" data-panel="vault" role="tab">备份</button>
+    </nav>
+
+    <div class="topbar-right">
+      <button class="icon-btn" id="help-btn" title="使用指引" aria-label="使用指引">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+          <circle cx="12" cy="12" r="9"/><path d="M9.6 9.2a2.5 2.5 0 1 1 3.3 2.4c-.6.2-.9.8-.9 1.4v.4"/><circle cx="12" cy="17" r=".9" fill="currentColor" stroke="none"/>
+        </svg>
+      </button>
+      <button class="icon-btn" id="update-btn" title="在线升级" aria-label="在线升级">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 3.5v10.5"/><path d="m8 10.5 4 4 4-4"/><path d="M4.5 17.5v2h15v-2"/>
+        </svg>
+      </button>
+      <button class="icon-btn" id="theme-btn" title="切换深浅色" aria-label="切换深浅色">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+          <circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.2 5.2l1.4 1.4M17.4 17.4l1.4 1.4M18.8 5.2l-1.4 1.4M6.6 17.4l-1.4 1.4"/>
+        </svg>
+      </button>
+      <button class="icon-btn danger" id="quit-btn" title="安全退出（结束后台进程）" aria-label="退出">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round">
+          <path d="M12 3.5v7"/><path d="M6.8 6.6a8 8 0 1 0 10.4 0"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <main class="main">
+    <aside class="side" id="side">
+      <div class="side-scroll">
+        <section class="side-block">
+          <div class="side-head">
+            <h2>人格</h2>
+            <button class="mini-btn" id="new-persona" title="新建一个人格模板">+ 新建</button>
+          </div>
+          <p class="side-hint">点一下选为注入对象；悬停出现铅笔，改内容。</p>
+          <ul class="pick-list" id="persona-list"></ul>
+        </section>
+
+        <section class="side-block">
+          <div class="side-head">
+            <h2>目标客户端</h2>
+            <button class="mini-btn" id="new-adapter" title="手动指定任意配置文件">+ 自定义</button>
+          </div>
+          <p class="side-hint">绿点=本机已检测到。灰点点了会说明原因；也能手动加。</p>
+          <ul class="pick-list" id="adapter-list"></ul>
+        </section>
+      </div>
+      <div class="side-foot">
+        <span class="counter" id="target-counter">—</span>
+      </div>
+    </aside>
+
+    <button class="side-toggle" id="side-toggle" title="收起 / 展开侧栏" aria-label="收起侧栏">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+        <path d="M14.5 6.5 8.5 12l6 5.5"/>
+      </svg>
+    </button>
+
+    <section class="content">
+
+      <!-- ============ 人格与注入（合并：选人格 / 改人格 / 注入 同一屏） ============ -->
+      <div class="panel active" id="panel-apply">
+        <div class="panel-head">
+          <div class="panel-title">
+            <h2 id="apply-title">选人格 → 选目标 → 预览 → 写入</h2>
+            <p class="muted" id="apply-sub">预览会显示每一处将要改动的内容，确认无误才会真正写入。</p>
+          </div>
+          <div class="plan-actions">
+            <div class="inject-mode" id="inject-mode" role="radiogroup" aria-label="写入方式">
+              <label class="im-opt" title="保留已注入的其他人物，它们在同一条通道里各占一个区块">
+                <input type="radio" name="injectmode" value="keep" checked>
+                <span>并存</span>
+              </label>
+              <label class="im-opt" title="同一条通道只留这一份，其他人物会被替换掉">
+                <input type="radio" name="injectmode" value="replace">
+                <span>替换</span>
+              </label>
+            </div>
+            <button class="btn ghost" id="btn-edit-persona">
+              <span class="btn-label">改这个人格</span>
+            </button>
+            <button class="btn ghost" id="btn-preview">
+              <span class="btn-label">预览差异</span>
+            </button>
+            <button class="btn primary" id="btn-apply" disabled>
+              <span class="btn-label">写入</span>
+            </button>
+          </div>
+        </div>
+
+        <p class="inject-mode-hint" id="inject-mode-hint">
+          <b>并存</b>：已注入的其他人物保留，同一条通道里会有多个区块，宿主会同时读到它们。
+          想只要当前这一份，切到「替换」。
+        </p>
+
+        <ol class="steps" id="steps">
+          <li class="step" data-step="1"><span class="dotnum">1</span>选人格</li>
+          <li class="step" data-step="2"><span class="dotnum">2</span>选目标</li>
+          <li class="step" data-step="3"><span class="dotnum">3</span>看差异</li>
+          <li class="step" data-step="4"><span class="dotnum">4</span>写入</li>
+        </ol>
+
+        <div class="apply-result" id="apply-result" hidden></div>
+
+        <div class="vars-bar" id="vars-bar" hidden>
+          <span class="vars-label">变量</span>
+          <div class="vars-fields" id="vars-fields"></div>
+        </div>
+
+        <div class="plan-summary" id="plan-summary" hidden></div>
+
+        <div class="diff-area" id="diff-area">
+          <div class="empty-state">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+              <path d="M9 3.5h6M8 6.5h8M6.5 9.5h11v11h-11z"/><path d="M9.5 13h5M9.5 16h3"/>
+            </svg>
+            <p class="empty-title">还没有预览</p>
+            <p class="empty-sub">左边选好人格与目标，再点右上角「预览差异」。改动会先摆在你眼前，确认后才落盘。</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ 注入管理 ============ -->
+      <div class="panel" id="panel-injections">
+        <div class="panel-head">
+          <div class="panel-title">
+            <h2>注入管理</h2>
+            <p class="muted">
+              扫描本机所有客户端，列出被写进去的人格——包括别的工具留下的。可单独开关，或彻底移除。
+            </p>
+          </div>
+          <div class="plan-actions">
+            <button class="btn ghost" id="btn-verify-inj">
+              <span class="btn-label">自检：这一轮读到了吗</span>
+            </button>
+            <button class="btn ghost" id="btn-audit">
+              <span class="btn-label">格式遵从</span>
+            </button>
+            <button class="btn ghost" id="btn-cloudmem">
+              <span class="btn-label">云记忆</span>
+            </button>
+            <button class="btn ghost" id="btn-tpl" title="专家会话默认只读 USER.md，这里给专家模板补 SOUL 插槽">
+              <span class="btn-label">宿主模板</span>
+            </button>
+            <button class="btn ghost" id="btn-rescan">
+              <span class="btn-label">重新扫描</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="scan-summary" id="scan-summary"></div>
+
+        <!-- 自检 / 格式遵从 / 云记忆 三块诊断都搬到了右侧抽屉（#diag-backdrop）。
+             原因：它们是"阶段性看一眼"的结论面板，内嵌展开会把下面的人格列表挤出屏幕——
+             而那一列才是这一页的主体。抽屉里各自独立滚动，互不挤压。 -->
+
+        <div class="inj-toolbar" id="inj-toolbar" hidden>
+          <label class="check-all">
+            <input type="checkbox" id="inj-check-all">
+            <span>全选可移除项</span>
+          </label>
+          <span class="muted" id="inj-selected-count">已选 0 项</span>
+          <span class="spacer"></span>
+          <button class="btn danger" id="btn-bulk-remove" disabled>移除选中</button>
+        </div>
+
+        <div class="inj-list" id="inj-list">
+          <div class="empty-state">
+            <p class="empty-sub">正在扫描…</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ 备份 ============ -->
+      <div class="panel" id="panel-vault">
+        <div class="panel-head">
+          <div class="panel-title">
+            <h2>备份与还原</h2>
+            <p class="muted">每次写入前自动快照。任何一次操作都可以逐字节还原——包括「这个文件原本不存在」这种情况。</p>
+          </div>
+          <div class="plan-actions">
+            <button class="btn ghost" id="btn-gc">清理旧快照</button>
+            <button class="btn ghost" id="btn-refresh-vault">刷新</button>
+          </div>
+        </div>
+        <div class="vault-stats" id="vault-stats"></div>
+        <ul class="snap-list" id="snap-list"></ul>
+
+        <details class="logs">
+          <summary>操作日志</summary>
+          <pre id="log-box">—</pre>
+        </details>
+      </div>
+
+    </section>
+  </main>
+
+  <footer class="statusbar">
+    <span class="status-dot" id="status-dot"></span>
+    <span id="status">就绪</span>
+    <span class="spacer"></span>
+    <span class="muted" id="data-root">—</span>
+  </footer>
+</div>
+
+<!-- ============ 人格编辑器（侧滑抽屉，与注入同屏） ============ -->
+<div class="drawer-backdrop" id="editor-backdrop" hidden>
+  <aside class="drawer" id="persona-drawer" role="dialog" aria-modal="true" aria-labelledby="editor-title">
+    <header class="drawer-head">
+      <div>
+        <h3 id="editor-title">编辑人格</h3>
+        <p class="drawer-sub" id="editor-sub">改完点保存，侧栏与注入区会立刻同步。</p>
+      </div>
+      <button class="icon-btn" id="editor-close" title="关闭（Esc）" aria-label="关闭">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round">
+          <path d="M6 6l12 12M18 6L6 18"/>
+        </svg>
+      </button>
+    </header>
+
+    <div class="drawer-body">
+      <div class="form-grid">
+        <label class="fg-item">名称
+          <input id="p-name" placeholder="给这个人格起个名字">
+        </label>
+        <label class="fg-item">标识
+          <input id="p-id" placeholder="留空自动生成" readonly>
+        </label>
+        <label class="fg-item">分类
+          <input id="p-category" placeholder="如：安全 / 写作 / 通用">
+        </label>
+        <label class="fg-item">继承自
+          <input id="p-extends" placeholder="留空表示不继承">
+        </label>
+      </div>
+      <label class="fg-item fg-full">说明
+        <input id="p-desc" placeholder="一句话描述这个人格干什么用">
+      </label>
+
+      <div class="editor-stat" id="p-stat">—</div>
+      <div class="editor-issues" id="p-issues" hidden></div>
+
+      <!-- 写作要点：折叠着，写的时候随手展开，不用切出去看文档 -->
+      <details class="write-guide">
+        <summary>怎么写（点开看六节各自管什么）</summary>
+        <div class="wg-body">
+          <p class="wg-lead">
+            人格不是越写越好，是<strong>越准</strong>越好。删掉之后行为不变的段落，就不该写。
+            渲染后超过 <strong>9000 字</strong>会被宿主直接截断，等于后半段白写。
+          </p>
+          <dl class="wg-list">
+            <dt>【身份】</dt>
+            <dd>一句话说清你是谁、服务什么目标、<b>不兼任什么</b>。不堆形容词。</dd>
+            <dt>【完成判据】</dt>
+            <dd>什么算做完了，写成能自查的条件。「每条意见指到文件与行号」比「高质量」有用。</dd>
+            <dt>【方法与硬约束】</dt>
+            <dd>必须怎么做的 + 绝不怎么做的。禁用词表特别有效：把模糊要求变成可判定规则。</dd>
+            <dt>【输出规格】</dt>
+            <dd>格式、长度、结构、字段。写具体数字，不写「适当」。</dd>
+            <dt>【不做的事】</dt>
+            <dd>角色跑偏通常不是没说清要做什么，而是没说不做什么。</dd>
+            <dt>【不确定时】</dt>
+            <dd>不写这节，默认行为就是<b>编</b>。想让它问，就明确写「信息不足先问，不要猜」。</dd>
+          </dl>
+          <p class="wg-foot">
+            完整说明（逐节反例、两种变体、常见错误）：项目里的 <code>docs/persona-template.md</code>
+          </p>
+        </div>
+      </details>
+
+      <textarea id="p-body" class="body-editor" spellcheck="false"
+                placeholder="在这里写人格正文。可用 {{变量名}} 占位。"></textarea>
+    </div>
+
+    <footer class="drawer-foot">
+      <button class="btn danger ghost" id="btn-delete-persona" title="删除这个人格模板">删除</button>
+      <span class="spacer"></span>
+      <button class="btn ghost" id="btn-skeleton" title="把六节标准骨架填进正文">插入骨架</button>
+      <button class="btn ghost" id="btn-import">导入 .md</button>
+      <button class="btn primary" id="btn-save-persona">保存</button>
+    </footer>
+  </aside>
+</div>
+
+<!-- ============ 诊断抽屉（自检 / 格式遵从 / 云记忆） ============
+     三块回答的是同一类问题：「我写进去的东西，宿主到底用了没」。
+     放在同一个抽屉里分页，而不是塞回列表上方——列表是这一页的主体，
+     诊断是阶段性结论，两者抢同一块纵向空间时永远是诊断赢，列表被挤没。 -->
+<div class="drawer-backdrop" id="diag-backdrop" hidden>
+  <aside class="drawer diag-drawer" id="diag-drawer" role="dialog" aria-modal="true" aria-labelledby="diag-title">
+    <header class="drawer-head">
+      <div>
+        <h3 id="diag-title">诊断</h3>
+        <p class="drawer-sub" id="diag-sub">三块回答同一类问题：写进去之后，宿主到底读到了、用上了没。</p>
+      </div>
+      <button class="icon-btn" id="diag-close" title="关闭（Esc）" aria-label="关闭">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round">
+          <path d="M6 6l12 12M18 6L6 18"/>
+        </svg>
+      </button>
+    </header>
+
+    <nav class="diag-tabs" id="diag-tabs" role="tablist">
+      <button class="diag-tab" role="tab" data-diag="verify">这一轮读到了吗</button>
+      <button class="diag-tab" role="tab" data-diag="audit">格式遵从度</button>
+      <button class="diag-tab" role="tab" data-diag="cloudmem">云记忆</button>
+      <button class="diag-tab" role="tab" data-diag="tpl">宿主模板</button>
+    </nav>
+
+    <div class="drawer-body diag-body" id="diag-body">
+      <section class="diag-sec" id="diag-sec-verify" hidden>
+        <div class="verify-box" id="verify-box"></div>
+      </section>
+      <section class="diag-sec" id="diag-sec-audit" hidden>
+        <div class="audit-box" id="audit-box"></div>
+      </section>
+      <section class="diag-sec" id="diag-sec-cloudmem" hidden>
+        <div class="cloudmem-box" id="cloudmem-box"></div>
+      </section>
+      <section class="diag-sec" id="diag-sec-tpl" hidden>
+        <div class="tpl-box" id="tpl-box"></div>
+      </section>
+    </div>
+  </aside>
+</div>
+
+<!-- ============ 自定义目标客户端 ============ -->
+<div class="modal-backdrop" id="custom-modal" hidden>
+  <div class="modal" role="dialog" aria-modal="true">
+    <h3 id="custom-title">自定义目标客户端</h3>
+    <p class="modal-hint">
+      有些客户端装得很偏，或者配置文件只是随便一个 .md。这里直接指定路径即可——
+      自动检测的那批客户端不受影响，两边会一起显示。
+    </p>
+
+    <label class="fg-item fg-full modal-field">显示名称
+      <input id="ct-name" placeholder="如：我的 Cursor 规则">
+    </label>
+
+    <label class="fg-item fg-full modal-field">配置文件路径
+      <textarea id="ct-paths" rows="3" spellcheck="false"
+                placeholder="一行一个，例如：&#10;./"></textarea>
+    </label>
+
+    <div class="upd-state" id="ct-state" hidden></div>
+
+    <div class="modal-actions">
+      <button class="btn ghost" id="ct-cancel">取消</button>
+      <button class="btn primary" id="ct-save">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- 确认弹窗 -->
+<div class="modal-backdrop" id="modal" hidden>
+  <div class="modal" role="dialog" aria-modal="true">
+    <h3 id="modal-title">确认</h3>
+    <div class="modal-body" id="modal-body"></div>
+    <div class="modal-actions">
+      <button class="btn ghost" id="modal-cancel">取消</button>
+      <button class="btn primary" id="modal-ok">确定</button>
+    </div>
+  </div>
+</div>
+
+<!-- 在线升级 -->
+<div class="modal-backdrop" id="upd" hidden>
+  <div class="modal upd-modal" role="dialog" aria-modal="true">
+    <h3>在线升级</h3>
+
+    <div class="upd-vers">
+      <div class="upd-v">
+        <span class="upd-k">当前版本</span>
+        <span class="upd-num" id="upd-current">—</span>
+      </div>
+      <div class="upd-arrow">→</div>
+      <div class="upd-v">
+        <span class="upd-k">最新版本</span>
+        <span class="upd-num" id="upd-latest">—</span>
+      </div>
+    </div>
+
+    <div class="upd-state" id="upd-state">点「检查更新」看看有没有新版本。</div>
+
+    <div class="upd-notes" id="upd-notes" hidden></div>
+
+    <details class="upd-src">
+      <summary>更新源</summary>
+      <input id="upd-source" spellcheck="false" placeholder="https://…/version.json">
+      <p class="upd-hint">默认指向本项目的分享页，已内置访问参数。只接受 https。</p>
+    </details>
+
+    <div class="modal-actions">
+      <button class="btn ghost" id="upd-close">关闭</button>
+      <button class="btn ghost" id="upd-check">检查更新</button>
+      <button class="btn primary" id="upd-download" disabled>下载并安装</button>
+    </div>
+  </div>
+</div>
+
+<!-- 使用指引 -->
+<div class="guide-backdrop" id="guide" hidden>
+  <div class="guide-card">
+    <div class="guide-step" data-g="1">
+      <div class="guide-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+          <path d="M4 6.5h16M4 12h10M4 17.5h13"/>
+        </svg>
+      </div>
+      <h3>左边选人格</h3>
+      <p>人格就是一段提示词。点一下选中作为注入对象；悬停出现 <b>铅笔</b> 就能改内容，或点「+ 新建」。编辑是右侧滑出的抽屉，<b>不用换页</b>。</p>
+    </div>
+    <div class="guide-step" data-g="2" hidden>
+      <div class="guide-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+          <rect x="3" y="4.5" width="18" height="13" rx="2"/><path d="M8 21h8M12 17.5V21"/>
+        </svg>
+      </div>
+      <h3>选目标客户端</h3>
+      <p>只有<b>绿点</b>表示本机确实检出。灰点点了会告诉你原因。装得偏、或者只想写进某个随便的 .md，就点「+ 自定义」直接指定路径。</p>
+    </div>
+    <div class="guide-step" data-g="3" hidden>
+      <div class="guide-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+          <circle cx="11" cy="11" r="6.5"/><path d="M16 16l4 4"/><path d="M8.5 11h5M11 8.5v5"/>
+        </svg>
+      </div>
+      <h3>先看差异，再写入</h3>
+      <p>点「预览差异」会把每一处改动摊开给你看。<b>确认之后</b>才落盘，而且写入前自动存档，随时能还原。</p>
+    </div>
+    <div class="guide-step" data-g="4" hidden>
+      <div class="guide-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+          <path d="M12 3v10"/><path d="m8 9 4 4 4-4"/><path d="M4 17v2.5h16V17"/>
+        </svg>
+      </div>
+      <h3>多个人格可以同时注入</h3>
+      <p>同一份文件里，每个人格各占一个区块，互不覆盖。想停掉某一条不用删，去「注入管理」关掉开关即可——内容会移出文件，随时能开回来。</p>
+    </div>
+
+    <div class="guide-foot">
+      <span class="guide-dots" id="guide-dots"></span>
+      <span class="spacer"></span>
+      <button class="btn ghost" id="guide-skip">跳过</button>
+      <button class="btn primary" id="guide-next">下一步</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" hidden></div>
+<script src="app.js"></script>
+</body>
+</html>

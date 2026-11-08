@@ -1,0 +1,79 @@
+{
+  "name": "persona-desktop",
+  "productName": "人格中枢桌面版",
+  "version": "0.3.17",
+  "description": "人格中枢 · 桌面版：自带渲染引擎，不依赖系统浏览器",
+  "main": "src/main.js",
+  "author": "persona-hub",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "fetch-backend": "node scripts/fetch-backend.mjs",
+    "pack": "npm run fetch-backend && electron-builder --dir",
+    "dist": "npm run fetch-backend && electron-builder"
+  },
+  "build": {
+    "appId": "local.personahub.desktop",
+    "productName": "人格中枢桌面版",
+    "directories": {
+      "output": "release",
+      "buildResources": "build"
+    },
+    "files": [
+      "src/**/*",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "resources/backend",
+        "to": "backend",
+        "filter": [
+          "**/*"
+        ]
+      },
+      {
+        "from": "build/icon.png",
+        "to": "icon.png"
+      },
+      {
+        "from": "build/icon.ico",
+        "to": "icon.ico"
+      }
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "build/icon.ico"
+    },
+  "nsis": {
+    "oneClick": false,
+    "perMachine": false,
+    "allowToChangeInstallationDirectory": true,
+    "createDesktopShortcut": true,
+    "createStartMenuShortcut": true,
+    "shortcutName": "人格中枢桌面版",
+    "runAfterFinish": true,
+    "deleteAppDataOnUninstall": false,
+    "language": "2052",
+    "license": "build/install-notice.txt",
+    "include": "build/installer-custom.nsh",
+    "artifactName": "${productName}-Setup-${version}.${ext}"
+  },
+    "electronLanguages": [
+      "zh-CN",
+      "en-US"
+    ],
+    "compression": "maximum"
+  },
+  "devDependencies": {
+    "electron": "^45.1.0",
+    "electron-builder": "^25.1.8"
+  }
+}

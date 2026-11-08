@@ -1,0 +1,178 @@
+/* 外壳注入样式 —— 把"网页"改造成"桌面软件"的样子
+ *
+ * 为什么用注入而不是改后端那套 HTML/CSS：
+ * 那套界面旧版（浏览器壳）也在用，直接改会连带改变旧版的样子。
+ * 注入只作用于本外壳的窗口，旧版一行不受影响。
+ *
+ * 目标形态（参考 Clash / 微信）：
+ *   顶部 34px 自绘标题栏：应用名 + 右上角功能图标 + Windows 原生窗口按钮
+ *   左侧一列：竖向导航（原顶部 tab）→ 人格列表 → 客户端列表
+ *   右侧：内容面板
+ *
+ * 走错的一版：把原来的顶部栏整条转成竖栏，结果页面里**本来就有**一个左侧栏
+ * （.main > .side），两个侧栏互挤，右边那栏被压到只剩一个字宽，出现竖排文字。
+ * 正确做法是把导航并进已有的侧栏，而不是再造一个。
+ */
+
+:root { --ph-titlebar: 34px; }
+
+html, body { height: 100%; }
+
+body {
+  padding-top: var(--ph-titlebar) !important;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+/* ---------- 1. 自绘标题栏 ---------- */
+#ph-titlebar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: var(--ph-titlebar);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 10px 0 14px;
+  /* 右侧 150px 留给 Windows 原生的 最小化/最大化/关闭 */
+  padding-right: 150px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  z-index: 9999;
+  -webkit-app-region: drag;
+  user-select: none;
+}
+
+#ph-titlebar .tb-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--accent);
+  flex: none;
+}
+
+#ph-titlebar .tb-title {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: .2px;
+}
+
+#ph-titlebar .tb-sub {
+  font-size: 11.5px;
+  color: var(--text-mute);
+}
+
+#ph-titlebar .tb-right {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+#ph-titlebar .tb-ver {
+  font-size: 11px;
+  color: var(--text-mute);
+  font-family: var(--mono);
+  margin-left: 8px;
+  padding-left: 10px;
+  border-left: 1px solid var(--border);
+}
+
+/* 标题栏里的图标按钮压小一号，避免撑破 34px */
+#ph-titlebar .icon-btn {
+  width: 26px; height: 26px;
+  border-radius: 6px;
+}
+#ph-titlebar .icon-btn svg { width: 15px; height: 15px; }
+
+/* 可拖动区域里的控件必须声明为不可拖动，否则点击被当成拖窗口 */
+#ph-titlebar button,
+#ph-titlebar .icon-btn,
+.topbar button,
+.side button,
+.tabs button {
+  -webkit-app-region: no-drag;
+}
+
+/* ---------- 2. 主体：单侧栏 + 内容 ---------- */
+.app { height: calc(100vh - var(--ph-titlebar)) !important; }
+
+.main { flex: 1; min-width: 0; }
+
+.side {
+  width: 218px;
+  min-width: 218px;
+  /* 侧栏空白处也能拖窗口 */
+  -webkit-app-region: drag;
+}
+
+.side .side-scroll { -webkit-app-region: no-drag; }
+
+/* 原顶部 tab → 侧栏顶部的竖向导航 */
+.tabs {
+  flex-direction: column !important;
+  gap: 2px !important;
+  width: 100%;
+  padding: 0 0 10px !important;
+  margin-bottom: 6px;
+  background: transparent !important;
+  border-radius: 0 !important;
+  border-bottom: 1px solid var(--border);
+}
+
+.tab {
+  width: 100%;
+  justify-content: flex-start !important;
+  text-align: left;
+  padding: 9px 12px !important;
+  border-radius: 8px !important;
+  font-size: 13px !important;
+  position: relative;
+}
+
+/* 选中项：左侧竖条，桌面软件常见的选中暗示 */
+.tab.active::before {
+  content: "";
+  position: absolute;
+  left: 0; top: 50%;
+  width: 3px; height: 16px;
+  margin-top: -8px;
+  border-radius: 0 2px 2px 0;
+  background: var(--accent);
+}
+
+/* 内容区吃满剩余宽度 */
+.content { flex: 1; min-width: 0; }
+.panel { min-width: 0; }
+
+/* 细一点的滚动条，贴近桌面软件观感 */
+.app ::-webkit-scrollbar { width: 10px; height: 10px; }
+.app ::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--text-mute) 38%, transparent);
+  border-radius: 6px;
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+.app ::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in srgb, var(--text-mute) 68%, transparent);
+  background-clip: content-box;
+}
+.app ::-webkit-scrollbar-track { background: transparent; }
+
+/* ---------- 5. 固定层必须让开标题栏 ----------
+ *
+ * 症状：打开右侧抽屉（诊断/编辑器）时，抽屉头部那行标题、刷新按钮、版本号
+ * 被窗口右上角的 最小化/最大化/关闭 压住一半，文字看不清。
+ *
+ * 原因：body 有 padding-top: 34px，但这几层都是 position: fixed + inset: 0，
+ * 固定定位相对的是视口，不是 body 的padding 盒 —— 它们照样从窗口最上沿铺起。
+ * 而 titleBarOverlay 把原生按钮画在内容**之上**（不是另占一行），
+ * 于是抽屉自己的头部正好落在那一带。
+ *
+ * 所以让这些层从标题栏下沿开始。抽屉/弹窗高度用 100% 的，会自动跟着变矮，不用另改。
+ */
+.drawer-backdrop,
+.modal-backdrop,
+.guide-backdrop,
+.bye-screen,
+#svc-down {
+  top: var(--ph-titlebar) !important;
+}

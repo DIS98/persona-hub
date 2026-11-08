@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="人格中枢 Persona Hub — 人格提示词多客户端注入、检测与可逆还原工具">
+<meta name="theme-color" content="#7c3aed">
+<title>人格中枢 Persona Hub · 开源项目</title>
+<link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="#top"><span class="mark">人</span><span>人格中枢</span><span class="en">Persona Hub</span></a>
+  <nav>
+    <a href="#intro">软件介绍</a><a href="#features">功能</a><a href="#start">快速开始</a>
+    <a href="#usage">使用方法</a><a href="#arch">开发逻辑</a><a href="#downloads">下载</a>
+  </nav>
+  <div class="actions">
+    <button class="icon-btn" id="themeToggle" aria-label="切换深浅色">☾</button>
+    <a class="btn-ghost" href="https://github.com/DIS98/persona-hub">GitHub ↗</a>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero">
+    <div class="container">
+      <span class="eyebrow"><span class="dot"></span>OPEN SOURCE · 内核 1.14.14 / 桌面 0.3.17</span>
+      <h1>人格中枢<span>Persona Hub</span></h1>
+      <p class="tagline">一处编辑，多端注入，随时逐字节还原。</p>
+      <p class="sub">Windows · Python 3.10+（源码运行）</p>
+      <div class="badges"><span class="badge"><b>MIT</b> 许可证</span><span class="badge"><b>PUBLIC</b> 可见性</span><span class="badge"><b>内核 1.14.14 / 桌面 0.3.17</b> 当前版本</span></div>
+      <div class="cta">
+        <a class="btn primary" href="#downloads">下载最新版 ↓</a>
+        <a class="btn" href="#features">了解功能</a>
+        <a class="btn" href="https://github.com/DIS98/persona-hub">查看源码 ↗</a>
+      </div>
+    </div>
+  </section>
+
+  <div class="container stats"><div class="stat reveal"><div class="v">1</div><div class="l">处编辑多端写入</div></div><div class="stat reveal"><div class="v">0</div><div class="l">联网依赖</div></div><div class="stat reveal"><div class="v">1</div><div class="l">事务全或无</div></div><div class="stat reveal"><div class="v">MIT</div><div class="l">源码许可</div></div></div>
+
+  <section class="section container" id="intro">
+    <div class="section-head reveal"><span class="kicker">01 / 软件介绍</span><h2>这是什么</h2><p>先把边界说清楚，再谈功能。</p></div>
+    <div class="prose reveal"><p>人格中枢处理的是「把一份人格提示词写进多个 AI 客户端」这件小事里最容易出问题的三处：写之前有没有原文、写之后有没有校验、不想要了能不能完整撤回。</p><p>它只走客户端公开的扩展点与普通文本文件——人格文件、托管提示词目录、记忆层、自定义指令——不改宿主程序文件、不注入进程、不依赖网络完成任务。同类工具常只记路径不存内容，这里改成写前快照、内容寻址备份、写后逐字节回读。</p><p>编辑、差异预演、注入、检测、还原集中在同一界面；所有写操作走一个「全或无」事务，任何一步回读不一致就用刚拍的快照整笔回滚。</p></div>
+    <div class="pill-row"><span class="pill">写前快照</span><span class="pill">逐字节还原</span><span class="pill">差异预演</span><span class="pill">幂等与共存</span><span class="pill">注入检测</span><span class="pill">生效自检</span></div>
+  </section>
+
+  <section class="section alt" id="features">
+    <div class="container">
+      <div class="section-head reveal"><span class="kicker">02 / 功能</span><h2>能做什么</h2><p>每一条都对应仓库里真实存在的代码路径。</p></div>
+      <div class="grid"><div class="card reveal"><div class="n">01 / FEATURE</div><h3>写前快照</h3><p>提交第一步拍现状快照，记录原文件是否存在、大小、权限与原文；原本不存在的文件还原时删除，而不是留一个空壳。</p></div><div class="card reveal"><div class="n">02 / FEATURE</div><h3>逐字节还原</h3><p>快照按 SHA-256 回读比对；停用第三方注入时用二进制存档，避免换行符被文本模式改写。</p></div><div class="card reveal"><div class="n">03 / FEATURE</div><h3>差异预演</h3><p>提交前生成 unified diff 与增删行数、字节数统计，预览阶段不写任何文件。</p></div><div class="card reveal"><div class="n">04 / FEATURE</div><h3>幂等与共存</h3><p>带 id 的区块就地替换，重复注入不叠加；多个默认并存于同一文件，显式选「替换」才只留一份，冲突时给出告警。</p></div><div class="card reveal"><div class="n">05 / FEATURE</div><h3>注入检测</h3><p>本工具区块、第三方特征签名、结构异常三类扫描并按人格归组；认不出的注入明确标为「未知」，不猜测。</p></div><div class="card reveal"><div class="n">06 / FEATURE</div><h3>生效自检</h3><p>从会话记录读回这一轮真正被读取的内容，给出生效 / 沿用 / 过期 / 部分 / 缺失 / 未注入的判定。</p></div><div class="card reveal"><div class="n">07 / FEATURE</div><h3>读取窗口预算</h3><p>按目标声明的读取上限计算剩余额度，注入位置超窗或挤掉使用者自己的规则时给出分级告警。</p></div><div class="card reveal"><div class="n">08 / FEATURE</div><h3>模板体系</h3><p>frontmatter + 正文、继承链、变量渲染、导入任意 Markdown、内置五套模板，界面可一键插入六节骨架。</p></div><div class="card reveal"><div class="n">09 / FEATURE</div><h3>自定义目标</h3><p>侧栏手填名称与路径，与自动检测并列显示；移除只删配置，不动已写入的文件。</p></div><div class="card reveal"><div class="n">10 / FEATURE</div><h3>本地优先</h3><p>断网满功能、纯标准库 Python 可审计、零设备标识采集、不上传任何内容。</p></div></div>
+    </div>
+  </section>
+
+  <section class="section container" id="start">
+    <div class="section-head reveal"><span class="kicker">03 / 快速开始</span><h2>四步跑起来</h2><p>只想用，就走前三步；想改，再看第四步。</p></div>
+    <div class="steps"><div class="step reveal"><div class="num">1</div><div><h3>选一种运行方式</h3><p>推荐直接下载桌面安装包；也可以下载单文件可执行程序，或用 Python 源码运行。</p><pre><code>Releases → desktop-0.3.17 → persona-desktop-0.3.17-62f3ca05-setup.exe
+Releases → core-1.14.14    → persona-hub-1.14.14-50af66ab.zip</code></pre></div></div><div class="step reveal"><div class="num">2</div><div><h3>启动</h3><p>桌面安装包走向导式安装，不需要管理员权限，卸载时保留数据。源码运行只需 Python 3.10+，无第三方依赖。</p><pre><code>python hub.py                # 默认图形界面
+python hub.py --no-gui       # 只起本地服务
+python hub.py --port 8900    # 指定起始端口（默认 8799）</code></pre></div></div><div class="step reveal"><div class="num">3</div><div><h3>完成第一次注入</h3><p>在「人格与注入」页选中一个人格 → 右侧抽屉编辑 → 填变量 → 点「预览差异」确认 → 选「并存」或「替换」→ 写入。</p><pre><code>① 侧栏选人格
+② 悬停铅笔 / 「改这个人格」打开抽屉
+③ 预览差异（只读，不写文件）
+④ 写入方式与变量确认后提交
+⑤ 在「注入管理」页看检测结果</code></pre></div></div><div class="step reveal"><div class="num">4</div><div><h3>写出自己的人格模板</h3><p>模板是带 frontmatter 的 Markdown，支持 extends 继承与 {{变量}} 占位；界面「插入骨架」可一键生成六节结构。</p><pre><code>---
+name: 我的助手
+extends: base-direct
+tags: [general]
+---
+
+【身份】
+{{角色描述}}
+
+【完成判据】
+…</code></pre></div></div></div>
+  </section>
+
+  <section class="section alt" id="usage">
+    <div class="container">
+      <div class="section-head reveal"><span class="kicker">04 / 使用方法</span><h2>日常怎么用</h2><p>操作路径、配置项与已知边界。</p></div>
+      <div class="usage-grid"><div class="usage-box reveal"><h3>三个页签</h3><ul><li>人格与注入：侧栏选人格、抽屉编辑、变量填写、差异预演、写入方式、Ctrl+S 保存。</li><li>注入管理：目标客户端与自定义目标、生效自检、格式遵从、记忆层、宿主模板插槽、重新扫描、开关与批量移除。</li><li>备份与还原：快照列表、还原到此、清理旧快照、操作日志。</li></ul></div><div class="usage-box reveal"><h3>人格模板写法</h3><ul><li>文件放在 personas/ 下，以 --- 开头的 frontmatter + 正文；字段含 id、name（必填）、desc、extends、tags、version、author、size_limit。</li><li>extends 支持链式继承，父正文在前、子正文在后；循环继承会被拒绝。</li><li>{{变量}} 由界面变量栏填写，未填值会被单独报出，不会静默变成空串。</li><li>六节骨架：身份 / 完成判据 / 方法与硬约束 / 输出规格 / 不做的事 / 不确定时。</li></ul></div><div class="usage-box reveal"><h3>停用、移除与还原</h3><ul><li>本工具注入停用后只留一行说明，正文不写进文件；再次启用时 id 不变。</li><li>第三方注入停用后整块移入存档，原位留标记，可再启用；移除按字符偏移精确切除。</li><li>删除人格前会先拍一份快照；任何一次写入都能从备份页回到写入前的状态。</li></ul></div><div class="usage-box reveal"><h3>升级与生效</h3><ul><li>顶栏升级入口：检查 → 下载 → 校验 → 暂存 → 下次启动应用；桌面与内核使用两份独立清单。</li><li>升级包只接受 HTTPS，下载后校验 SHA-256 与体积上限，解压时拦截路径穿越，应用时跳过数据目录。</li><li>改动身份类文件后，需要完全退出宿主客户端（含托盘）再打开才会生效。</li></ul></div></div>
+    </div>
+  </section>
+
+  <section class="section container" id="arch">
+    <div class="section-head reveal"><span class="kicker">05 / 开发逻辑</span><h2>怎么设计出来的</h2><p>数据从哪来、写到哪去、哪一步不允许省。</p></div>
+    <div class="flow reveal"><div class="node">单页前端</div><div class="arrow">→</div><div class="node">本地 HTTP API</div><div class="arrow">→</div><div class="node">业务层</div><div class="arrow">→</div><div class="node">适配器</div><div class="arrow">→</div><div class="node">事务与备份库</div><div class="arrow">→</div><div class="node">目标文本文件</div></div>
+    <div class="two-col">
+      <div class="panel reveal"><h3>模块划分</h3><table><thead><tr><th>位置</th><th>职责</th></tr></thead><tbody><tr><td>hub.py</td><td>入口：启动服务、拉起窗口、单实例守卫、退出判活、更新引导</td></tr><tr><td>core/server.py</td><td>标准库 HTTP 服务，仅绑回环地址；统一响应信封与协议层校验</td></tr><tr><td>core/adapters/</td><td>目标发现与四种注入策略；注册表与自定义目标</td></tr><tr><td>core/persona.py</td><td>模板解析、继承、变量渲染、校验与导入</td></tr><tr><td>core/txn.py</td><td>stage → preview → commit；按路径锁、原子写、整笔回滚</td></tr><tr><td>core/vault.py</td><td>内容寻址快照、还原、回读校验与垃圾回收</td></tr><tr><td>core/detect.py · core/switch.py</td><td>注入检测归组；停用、启用与移除</td></tr><tr><td>core/verify.py · core/audit.py</td><td>生效自检与输出格式遵从度统计</td></tr><tr><td>core/update.py</td><td>在线升级：检查、下载、校验、暂存、延迟应用</td></tr><tr><td>web/ · desktop/</td><td>原生单页界面；Electron 外壳只引入已构建的后端二进制</td></tr></tbody></table></div>
+      <div class="panel reveal"><h3>关键设计决策</h3><div class="decision"><b>快照先于写入</b><span>提交的第一步是拍摄现状快照，顺序不可颠倒；否则回滚没有依据。</span></div><div class="decision"><b>全或无事务</b><span>逐文件原子写完成后统一回读，任一不一致就用刚拍的快照把已写的全部还原；写操作加进程内锁，防并发覆盖。</span></div><div class="decision"><b>只走官方扩展点</b><span>不修改宿主程序文件与依赖包，不注入进程，把宿主升级带来的冲突面降到最小。</span></div><div class="decision"><b>判定靠证据</b><span>目标是否可用看目标文件或标志物是否存在，不靠父目录猜测；注入状态靠完整区块标记解析，不靠子串包含。</span></div><div class="decision"><b>正文防伪造</b><span>写入前把正文里伪造的区块标记替换为全角字符，防止内容伪装成控制结构。</span></div><div class="decision"><b>前后端分离</b><span>桌面外壳不放后端源码副本，通过本机 HTTP API 与页面心跳通信；界面样式只在本窗口内注入。</span></div><div class="decision"><b>协议层收敛</b><span>仅允许回环 Host、限定请求体大小与内容类型，补充 nosniff 与同源读取策略。</span></div></div>
+    </div>
+    <div class="tree-block reveal"><h3>目录结构</h3><pre><code>persona-hub/
+├── hub.py                 入口：服务、窗口、单实例、退出判活
+├── core/                  后端核心
+│   ├── server.py          HTTP API 与静态资源
+│   ├── adapters/          目标发现与注入策略
+│   ├── persona.py         模板解析、继承、变量、校验
+│   ├── txn.py             写入事务与回滚
+│   ├── vault.py           内容寻址备份与还原
+│   ├── detect.py          注入检测
+│   ├── switch.py          停用 / 启用 / 移除
+│   ├── verify*.py         生效自检
+│   ├── audit.py           格式遵从度统计
+│   └── update.py          在线升级
+├── web/                   原生 HTML / CSS / JS 单页界面
+├── personas/              内置只读人格模板
+├── desktop/               Electron 外壳与打包配置
+├── tests/ · tools/        测试用例与辅助工具
+└── docs/                  使用指南、架构说明、第三方组件声明</code></pre></div>
+  </section>
+
+  <section class="section alt" id="downloads">
+    <div class="container">
+      <div class="section-head reveal"><span class="kicker">06 / 下载</span><h2>安装包</h2><p>所有二进制都放在 Releases，不进源码仓库。</p></div>
+      <div class="dl-cards"><div class="dl-card reveal"><span class="tag">desktop-0.3.17</span><h3>persona-desktop-0.3.17-62f3ca05-setup.exe</h3><div class="meta">116,575,760 B</div><p>桌面版 NSIS 安装包，向导式、当前用户安装</p><a class="btn" href="https://github.com/DIS98/persona-hub/releases/tag/desktop-0.3.17">下载 →</a></div><div class="dl-card reveal"><span class="tag">core-1.14.14</span><h3>persona-hub-1.14.14-50af66ab.zip</h3><div class="meta">561,986 B</div><p>内核源码包，可用 Python 3.10+ 直接运行</p><a class="btn" href="https://github.com/DIS98/persona-hub/releases/tag/core-1.14.14">下载 →</a></div></div>
+    </div>
+  </section>
+
+  <section class="section container" id="license">
+    <div class="section-head reveal"><span class="kicker">07 / 许可与致谢</span><h2>许可证与第三方组件</h2></div>
+    <div class="notice reveal">本项目自研代码采用 MIT 许可证，可自由使用、修改与再分发，保留版权声明即可。随安装包分发的第三方组件各有其许可，详见仓库 <code>THIRD-PARTY-NOTICES.md</code>。</div>
+    <div class="panel reveal"><h3>第三方组件</h3><table><thead><tr><th>组件</th><th>许可</th><th>说明</th></tr></thead><tbody><tr><td>Python 标准库</td><td>PSF License</td><td>后端运行时，无第三方包依赖</td></tr><tr><td>Electron</td><td>MIT</td><td>桌面外壳</td></tr><tr><td>electron-builder</td><td>MIT</td><td>NSIS 安装包构建</td></tr><tr><td>PyInstaller</td><td>GPL with bootloader exception</td><td>单文件可执行程序打包</td></tr></tbody></table></div>
+    <div style="margin-top:32px"><h3 style="font-size:17px;margin:0 0 16px">常见问题</h3><details class='reveal'><summary>会修改宿主程序文件吗？</summary><p>不会。只写客户端公开的扩展点与普通文本文件，不改二进制、不注入进程。</p></details><details class='reveal'><summary>断网能用吗？</summary><p>能。核心功能不依赖网络；只有主动检查更新时才会发起请求。</p></details><details class='reveal'><summary>支持哪些客户端？</summary><p>内置常见文本型通道的适配器，并允许在侧栏自定义目标；适配器注册表可扩展。</p></details><details class='reveal'><summary>写入失败会留下半截内容吗？</summary><p>不会。任一文件回读不一致，整笔事务会用快照还原到写入前。</p></details></div>
+  </section>
+</main>
+
+<footer><div class="container"><span>人格中枢 Persona Hub · 内核 1.14.14 / 桌面 0.3.17 · MIT License</span><span><a href="https://github.com/DIS98/persona-hub">源码</a> · <a href="https://github.com/DIS98/persona-hub/releases">下载</a> · <a href="https://github.com/DIS98/persona-hub/blob/main/THIRD-PARTY-NOTICES.md">第三方声明</a></span></div></footer>
+<script src="assets/site.js"></script>
+</body>
+</html>
