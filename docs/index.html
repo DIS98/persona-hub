@@ -24,11 +24,11 @@
 <main id="top">
   <section class="hero">
     <div class="container">
-      <span class="eyebrow"><span class="dot"></span>OPEN SOURCE · 内核 1.14.14 / 桌面 0.3.17</span>
+      <span class="eyebrow"><span class="dot"></span>OPEN SOURCE · 内核 1.14.15 / 桌面 0.3.18</span>
       <h1>人格中枢<span>Persona Hub</span></h1>
       <p class="tagline">一处编辑，多端注入，随时逐字节还原。</p>
       <p class="sub">Windows · Python 3.10+（源码运行）</p>
-      <div class="badges"><span class="badge"><b>MIT</b> 许可证</span><span class="badge"><b>PUBLIC</b> 可见性</span><span class="badge"><b>内核 1.14.14 / 桌面 0.3.17</b> 当前版本</span></div>
+      <div class="badges"><span class="badge"><b>MIT</b> 许可证</span><span class="badge"><b>PUBLIC</b> 可见性</span><span class="badge"><b>内核 1.14.15 / 桌面 0.3.18</b> 当前版本</span></div>
       <div class="cta">
         <a class="btn primary" href="#downloads">下载最新版 ↓</a>
         <a class="btn" href="#features">了解功能</a>
@@ -48,14 +48,14 @@
   <section class="section alt" id="features">
     <div class="container">
       <div class="section-head reveal"><span class="kicker">02 / 功能</span><h2>能做什么</h2><p>每一条都对应仓库里真实存在的代码路径。</p></div>
-      <div class="grid"><div class="card reveal"><div class="n">01 / FEATURE</div><h3>写前快照</h3><p>提交第一步拍现状快照，记录原文件是否存在、大小、权限与原文；原本不存在的文件还原时删除，而不是留一个空壳。</p></div><div class="card reveal"><div class="n">02 / FEATURE</div><h3>逐字节还原</h3><p>快照按 SHA-256 回读比对；停用第三方注入时用二进制存档，避免换行符被文本模式改写。</p></div><div class="card reveal"><div class="n">03 / FEATURE</div><h3>差异预演</h3><p>提交前生成 unified diff 与增删行数、字节数统计，预览阶段不写任何文件。</p></div><div class="card reveal"><div class="n">04 / FEATURE</div><h3>幂等与共存</h3><p>带 id 的区块就地替换，重复注入不叠加；多个默认并存于同一文件，显式选「替换」才只留一份，冲突时给出告警。</p></div><div class="card reveal"><div class="n">05 / FEATURE</div><h3>注入检测</h3><p>本工具区块、第三方特征签名、结构异常三类扫描并按人格归组；认不出的注入明确标为「未知」，不猜测。</p></div><div class="card reveal"><div class="n">06 / FEATURE</div><h3>生效自检</h3><p>从会话记录读回这一轮真正被读取的内容，给出生效 / 沿用 / 过期 / 部分 / 缺失 / 未注入的判定。</p></div><div class="card reveal"><div class="n">07 / FEATURE</div><h3>读取窗口预算</h3><p>按目标声明的读取上限计算剩余额度，注入位置超窗或挤掉使用者自己的规则时给出分级告警。</p></div><div class="card reveal"><div class="n">08 / FEATURE</div><h3>模板体系</h3><p>frontmatter + 正文、继承链、变量渲染、导入任意 Markdown、内置五套模板，界面可一键插入六节骨架。</p></div><div class="card reveal"><div class="n">09 / FEATURE</div><h3>自定义目标</h3><p>侧栏手填名称与路径，与自动检测并列显示；移除只删配置，不动已写入的文件。</p></div><div class="card reveal"><div class="n">10 / FEATURE</div><h3>本地优先</h3><p>断网满功能、纯标准库 Python 可审计、零设备标识采集、不上传任何内容。</p></div></div>
+      <div class="grid"><div class="card reveal"><div class="n">01 / FEATURE</div><h3>写前快照</h3><p>提交第一步拍现状快照，记录原文件是否存在、大小、权限与原文；原本不存在的文件还原时删除，而不是留一个空壳。</p></div><div class="card reveal"><div class="n">02 / FEATURE</div><h3>逐字节还原</h3><p>快照按 SHA-256 回读比对；停用第三方注入时用二进制存档，避免换行符被文本模式改写。</p></div><div class="card reveal"><div class="n">03 / FEATURE</div><h3>差异预演</h3><p>提交前生成 unified diff 与增删行数、字节数统计，预览阶段不写任何文件。</p></div><div class="card reveal"><div class="n">04 / FEATURE</div><h3>幂等与共存</h3><p>带 id 的区块就地替换，重复注入不叠加；多个默认并存于同一文件，显式选「替换」才只留一份，冲突时给出告警。</p></div><div class="card reveal"><div class="n">05 / FEATURE</div><h3>注入检测</h3><p>本工具区块、第三方特征签名、结构异常三类扫描并按人格归组；认不出的注入明确标为「未知」，不猜测。</p></div><div class="card reveal"><div class="n">06 / FEATURE</div><h3>生效自检</h3><p>从会话记录读回这一轮真正被读取的内容，给出生效 / 沿用 / 过期 / 部分 / 缺失 / 未注入的判定。</p></div><div class="card reveal"><div class="n">07 / FEATURE</div><h3>读取窗口预算</h3><p>按目标声明的读取上限计算剩余额度，注入位置超窗或挤掉使用者自己的规则时给出分级告警。</p></div><div class="card reveal"><div class="n">08 / FEATURE</div><h3>模板体系</h3><p>frontmatter + 正文、继承链、变量渲染、导入任意 Markdown、内置六套模板，界面可一键插入六节骨架。</p></div><div class="card reveal"><div class="n">09 / FEATURE</div><h3>自定义目标</h3><p>侧栏手填名称与路径，与自动检测并列显示；移除只删配置，不动已写入的文件。</p></div><div class="card reveal"><div class="n">10 / FEATURE</div><h3>本地优先</h3><p>断网满功能、纯标准库 Python 可审计、零设备标识采集、不上传任何内容。</p></div></div>
     </div>
   </section>
 
   <section class="section container" id="start">
     <div class="section-head reveal"><span class="kicker">03 / 快速开始</span><h2>四步跑起来</h2><p>只想用，就走前三步；想改，再看第四步。</p></div>
-    <div class="steps"><div class="step reveal"><div class="num">1</div><div><h3>选一种运行方式</h3><p>推荐直接下载桌面安装包；也可以下载单文件可执行程序，或用 Python 源码运行。</p><pre><code>Releases → desktop-0.3.17 → persona-desktop-0.3.17-62f3ca05-setup.exe
-Releases → core-1.14.14    → persona-hub-1.14.14-50af66ab.zip</code></pre></div></div><div class="step reveal"><div class="num">2</div><div><h3>启动</h3><p>桌面安装包走向导式安装，不需要管理员权限，卸载时保留数据。源码运行只需 Python 3.10+，无第三方依赖。</p><pre><code>python hub.py                # 默认图形界面
+    <div class="steps"><div class="step reveal"><div class="num">1</div><div><h3>选一种运行方式</h3><p>推荐直接下载桌面安装包；也可以下载单文件可执行程序，或用 Python 源码运行。</p><pre><code>Releases → desktop-0.3.18 → persona-desktop-0.3.18-e7112894-setup.exe
+Releases → core-1.14.15    → persona-hub-1.14.15-7a3d0bb5.zip</code></pre></div></div><div class="step reveal"><div class="num">2</div><div><h3>启动</h3><p>桌面安装包走向导式安装，不需要管理员权限，卸载时保留数据。源码运行只需 Python 3.10+，无第三方依赖。</p><pre><code>python hub.py                # 默认图形界面
 python hub.py --no-gui       # 只起本地服务
 python hub.py --port 8900    # 指定起始端口（默认 8799）</code></pre></div></div><div class="step reveal"><div class="num">3</div><div><h3>完成第一次注入</h3><p>在「人格与注入」页选中一个人格 → 右侧抽屉编辑 → 填变量 → 点「预览差异」确认 → 选「并存」或「替换」→ 写入。</p><pre><code>① 侧栏选人格
 ② 悬停铅笔 / 「改这个人格」打开抽屉
@@ -111,7 +111,7 @@ tags: [general]
   <section class="section alt" id="downloads">
     <div class="container">
       <div class="section-head reveal"><span class="kicker">06 / 下载</span><h2>安装包</h2><p>所有二进制都放在 Releases，不进源码仓库。</p></div>
-      <div class="dl-cards"><div class="dl-card reveal"><span class="tag">desktop-0.3.17</span><h3>persona-desktop-0.3.17-62f3ca05-setup.exe</h3><div class="meta">116,575,760 B</div><p>桌面版 NSIS 安装包，向导式、当前用户安装</p><a class="btn" href="https://github.com/DIS98/persona-hub/releases/tag/desktop-0.3.17">下载 →</a></div><div class="dl-card reveal"><span class="tag">core-1.14.14</span><h3>persona-hub-1.14.14-50af66ab.zip</h3><div class="meta">561,986 B</div><p>内核源码包，可用 Python 3.10+ 直接运行</p><a class="btn" href="https://github.com/DIS98/persona-hub/releases/tag/core-1.14.14">下载 →</a></div></div>
+      <div class="dl-cards"><div class="dl-card reveal"><span class="tag">desktop-0.3.18</span><h3>persona-desktop-0.3.18-e7112894-setup.exe</h3><div class="meta">116,579,104 B</div><p>桌面版 NSIS 安装包，向导式、当前用户安装</p><a class="btn" href="https://github.com/DIS98/persona-hub/releases/tag/desktop-0.3.18">下载 →</a></div><div class="dl-card reveal"><span class="tag">core-1.14.15</span><h3>persona-hub-1.14.15-7a3d0bb5.zip</h3><div class="meta">565,763 B</div><p>内核源码包，可用 Python 3.10+ 直接运行</p><a class="btn" href="https://github.com/DIS98/persona-hub/releases/tag/core-1.14.15">下载 →</a></div></div>
     </div>
   </section>
 
@@ -123,7 +123,7 @@ tags: [general]
   </section>
 </main>
 
-<footer><div class="container"><span>人格中枢 Persona Hub · 内核 1.14.14 / 桌面 0.3.17 · MIT License</span><span><a href="https://github.com/DIS98/persona-hub">源码</a> · <a href="https://github.com/DIS98/persona-hub/releases">下载</a> · <a href="https://github.com/DIS98/persona-hub/blob/main/THIRD-PARTY-NOTICES.md">第三方声明</a></span></div></footer>
+<footer><div class="container"><span>人格中枢 Persona Hub · 内核 1.14.15 / 桌面 0.3.18 · MIT License</span><span><a href="https://github.com/DIS98/persona-hub">源码</a> · <a href="https://github.com/DIS98/persona-hub/releases">下载</a> · <a href="https://github.com/DIS98/persona-hub/blob/main/THIRD-PARTY-NOTICES.md">第三方声明</a></span></div></footer>
 <script src="assets/site.js"></script>
 </body>
 </html>

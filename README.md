@@ -45,7 +45,7 @@
 - **注入检测** — 本工具区块、第三方特征签名、结构异常三类扫描并按人格归组；认不出的注入明确标为「未知」，不猜测。
 - **生效自检** — 从会话记录读回这一轮真正被读取的内容，给出生效 / 沿用 / 过期 / 部分 / 缺失 / 未注入的判定。
 - **读取窗口预算** — 按目标声明的读取上限计算剩余额度，注入位置超窗或挤掉使用者自己的规则时给出分级告警。
-- **模板体系** — frontmatter + 正文、继承链、变量渲染、导入任意 Markdown、内置五套模板，界面可一键插入六节骨架。
+- **模板体系** — frontmatter + 正文、继承链、变量渲染、导入任意 Markdown、内置六套模板，界面可一键插入六节骨架。
 - **自定义目标** — 侧栏手填名称与路径，与自动检测并列显示；移除只删配置，不动已写入的文件。
 - **本地优先** — 断网满功能、纯标准库 Python 可审计、零设备标识采集、不上传任何内容。
 
@@ -57,8 +57,8 @@
 推荐直接下载桌面安装包；也可以下载单文件可执行程序，或用 Python 源码运行。
 
 ```text
-Releases → desktop-0.3.17 → persona-desktop-0.3.17-62f3ca05-setup.exe
-Releases → core-1.14.14    → persona-hub-1.14.14-50af66ab.zip
+Releases → desktop-0.3.18 → persona-desktop-0.3.18-e7112894-setup.exe
+Releases → core-1.14.15    → persona-hub-1.14.15-7a3d0bb5.zip
 ```
 
 ### 2. 启动
@@ -165,12 +165,12 @@ flowchart LR
 <a id="downloads"></a>
 ## 下载与版本
 
-所有二进制都放在 Releases，不进源码仓库。当前版本：**内核 1.14.14 / 桌面 0.3.17**。
+所有二进制都放在 Releases，不进源码仓库。当前版本：**内核 1.14.15 / 桌面 0.3.18**。
 
 | 安装包 | 体积 | 说明 | Release |
 | --- | --- | --- | --- |
-| `persona-desktop-0.3.17-62f3ca05-setup.exe` | 116,575,760 B | 桌面版 NSIS 安装包，向导式、当前用户安装 | [desktop-0.3.17](https://github.com/DIS98/persona-hub/releases/tag/desktop-0.3.17) |
-| `persona-hub-1.14.14-50af66ab.zip` | 561,986 B | 内核源码包，可用 Python 3.10+ 直接运行 | [core-1.14.14](https://github.com/DIS98/persona-hub/releases/tag/core-1.14.14) |
+| `persona-desktop-0.3.18-e7112894-setup.exe` | 116,579,104 B | 桌面版 NSIS 安装包，向导式、当前用户安装 | [desktop-0.3.18](https://github.com/DIS98/persona-hub/releases/tag/desktop-0.3.18) |
+| `persona-hub-1.14.15-7a3d0bb5.zip` | 565,763 B | 内核源码包，可用 Python 3.10+ 直接运行 | [core-1.14.15](https://github.com/DIS98/persona-hub/releases/tag/core-1.14.15) |
 
 下载后请核对文件体积；Release 说明里附有校验方式。
 

@@ -10,8 +10,8 @@
 推荐直接下载桌面安装包；也可以下载单文件可执行程序，或用 Python 源码运行。
 
 ```text
-Releases → desktop-0.3.17 → persona-desktop-0.3.17-62f3ca05-setup.exe
-Releases → core-1.14.14    → persona-hub-1.14.14-50af66ab.zip
+Releases → desktop-0.3.18 → persona-desktop-0.3.18-e7112894-setup.exe
+Releases → core-1.14.15    → persona-hub-1.14.15-7a3d0bb5.zip
 ```
 
 ### 2. 启动
